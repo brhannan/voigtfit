@@ -1,39 +1,36 @@
 function [estimates, model] = voigtfit(xdata, ydata, initGuess, peakBounds, varargin)
 % VOIGTFIT Fit data to a Voigt profile model.
 %
-% [estimates, model] = voigtfit(x, y, initGuess, peakBounds) fits the x and y 
-% data to one or more Voigt profile models, returning the Voigt profile 
+% [estimates, model] = voigtfit(x, y, initGuess, peakBounds) fits the x and y
+% data to one or more Voigt profile models, returning the Voigt profile
 % parameters in the vector estimates and the fit function handle, model.
-% The Voigt model fit is initialized with the parameters in initGuess. The 
-% background is fit to a 3rd order polynomial by excluding the data contained 
+% The Voigt model fit is initialized with the parameters in initGuess. The
+% background is fit to a 3rd order polynomial by excluding the data contained
 % within the upper and lower bounds specified by peakBounds.
 %
-% [estimates, model] = voigtfit(x, y, initGuess, peakBounds, bkgdFitOrder) fits 
+% [estimates, model] = voigtfit(x, y, initGuess, peakBounds, bkgdFitOrder) fits
 % the background to a polynomial of order bkgdFitOrder.
 %
 % Inputs:
 %   xdata       A vector of x data.
 %   ydata       A vector of y data.
-%   initGuess   A row vector containing initial guesses for the nonlinear fit 
-%               parameters. There are 3 parameters for each peak: 
-%               peak center value, gamma, and sigma. For multiple peaks, 
-%               use the format 
+%   initGuess   A row vector containing initial guesses for the nonlinear fit
+%               parameters. There are 3 parameters for each peak:
+%               peak center value, gamma, and sigma. For multiple peaks,
+%               use the format
 %               [peak_1, gamma_1, sigma_1, peak_2, gamma_2, sigma_2, ...].
 %               For more info on Voigt profile parameters, see
 %               https://en.wikipedia.org/wiki/Voigt_profile.
-%   peakBounds  A 1x2 vector of the form [LB, UB]. The user must select upper 
+%   peakBounds  A 1x2 vector of the form [LB, UB]. The user must select upper
 %               and lower bounds for the region containing the peak(s).
-%               The background is fit to a polynomial by excluding this data. 
-%   bkgdOrder   Optional input. The order of the polynomial used for the 
+%               The background is fit to a polynomial by excluding this data.
+%   bkgdOrder   Optional input. The order of the polynomial used for the
 %               background fit. The default value is 2.
 % Outputs:
-%   estimates   A row vector containing the final estimates for nonlinear 
-%               parameters. The elements are organized identically to the 
+%   estimates   A row vector containing the final estimates for nonlinear
+%               parameters. The elements are organized identically to the
 %               initGuess input parameter.
 %   model       A handle to the model function.
-%
-% Author: B. Hannan (brianmhannan@gmail.com)
-% Written with MATLAB R2015a.
 
 % Resources:
 % MathWorks curve fitting tutorial
@@ -156,13 +153,13 @@ end
 
 
 function peaksCell = calc_model_from_nlparams(nlpVec, x, y)
-% Outputs fit results in the cell array peaksCell. The 1st element is the 
-% total fit. When >1 peaks are fit to the data, the n+1th element of peaksCell 
+% Outputs fit results in the cell array peaksCell. The 1st element is the
+% total fit. When >1 peaks are fit to the data, the n+1th element of peaksCell
 % corresponds to the n+1th peak.
 peaksCell = cell(1, numel(nlpVec)/3);
 A = zeros(numel(x), numel(nlpVec)/3);
 for k = 1:numel(nlpVec)/3
-    A(:,k) = voigt(x, nlpVec(3*k-2), nlpVec(3*k-1), nlpVec(3*k));   
+    A(:,k) = voigt(x, nlpVec(3*k-2), nlpVec(3*k-1), nlpVec(3*k));
 end
 c = A\y;
 peaksCell{1} = A*c; % 1st element of output is the total fit.
